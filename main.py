@@ -89,20 +89,112 @@ import pandas as pd
 #         df_sorted.to_csv(out_path, index=False)
 #         print(f"Sorted dataset saved to {out_path}")
     
-def main(path, searched_magnitude):
-    file_path = os.path.join(path, "merged_dataset.csv")
+# def main(path, searched_magnitude):
+#     file_path = os.path.join(path, "merged_dataset.csv")
+#     df = pd.read_csv(file_path)
+#     print(df.columns)
+#     matching_earthquakes = df[df["Magnitude"] == searched_magnitude]
+#     if matching_earthquakes.empty:
+#         print(f"No earthquakes found with magnitude {searched_magnitude}.")
+#     else:
+#         print(f"Earthquakes with magnitude {searched_magnitude}:")
+#         print(matching_earthquakes)
+
+def Modify_tsunamis_updated_4(path):
+    file_path = os.path.join(path, "tsunamis_updated_4.csv")
     df = pd.read_csv(file_path)
-    print(df.columns)
-    matching_earthquakes = df[df["Magnitude"] == searched_magnitude]
-    if matching_earthquakes.empty:
-        print(f"No earthquakes found with magnitude {searched_magnitude}.")
-    else:
-        print(f"Earthquakes with magnitude {searched_magnitude}:")
-        print(matching_earthquakes)
+    # remove Tsunami Event Validity and vol column
+    if "Tsunami Event Validity" in df.columns:
+        df = df.drop(columns=["Tsunami Event Validity"])
+    if "Vol" in df.columns:
+        df = df.drop(columns=["Vol"])
+    if "Tsunami Cause Code" in df.columns:
+        df = df.drop(columns=["Tsunami Cause Code"])
+    if "More Info" in df.columns:
+        df = df.drop(columns=["More Info"])
+    if "Deposits" in df.columns:
+        df = df.drop(columns=["Deposits"])
+    if "Country" in df.columns:
+        df = df.drop(columns=["Country"])
+    if "Tsunami Intensity" in df.columns:
+        df = df.drop(columns=["Tsunami Intensity"])
+    if "Deaths" in df.columns:
+        df = df.drop(columns=["Deaths"])
+    if "Tsunami Magnitude (Iida)" in df.columns:
+        df = df.drop(columns=["Tsunami Magnitude (Iida)"])
+    if "Tsunami Magnitude (Abe)" in df.columns:
+        df = df.drop(columns=["Tsunami Magnitude (Abe)"])
+    if "Missing Description" in df.columns:
+        df = df.drop(columns=["Missing Description"])
+    if "Missing" in df.columns:
+        df = df.drop(columns=["Missing"])
+    if "Injuries" in df.columns:
+        df = df.drop(columns=["Injuries"])
+    if "Injuries Description" in df.columns:
+        df = df.drop(columns=["Injuries Description"])
+    if "Damage ($Mil)" in df.columns:
+        df = df.drop(columns=["Damage ($Mil)"])
+    if "Houses Destroyed" in df.columns:
+        df = df.drop(columns=["Houses Destroyed"])
+    if "Houses Destroyed Description" in df.columns:
+        df = df.drop(columns=["Houses Destroyed Description"])
+    if "Houses Damaged" in df.columns:
+        df = df.drop(columns=["Houses Damaged"])
+    if "Houses Damaged Description" in df.columns:
+        df = df.drop(columns=["Houses Damaged Description"])
+    if "Total Deaths" in df.columns:
+        df = df.drop(columns=["Total Deaths"])
+    if "Death Description" in df.columns:
+        df = df.drop(columns=["Death Description"])
+    if "Total Missing Description" in df.columns:
+        df = df.drop(columns=["Total Missing Description"])
+    if "Total Missing" in df.columns:
+        df = df.drop(columns=["Total Missing"])
+    if "Damage Description" in df.columns:
+        df = df.drop(columns=["Damage Description"])
+    if "Total Houses Destroyed Description" in df.columns:
+        df = df.drop(columns=["Total Houses Destroyed Description"])
+    if "Total Houses Destroyed" in df.columns:
+        df = df.drop(columns=["Total Houses Destroyed"])
+    if "Total Houses Damaged Description" in df.columns:
+        df = df.drop(columns=["Total Houses Damaged Description"])
+    if "Total Houses Damaged" in df.columns:
+        df = df.drop(columns=["Total Houses Damaged"])
+    
+    df = df.rename(columns={"Origin Time": "Origin_Time"})
+    df = df.rename(columns={"Location Name": "Location_Name"})
+    df = df.rename(columns={"Maximum Water Height (m)": "Max_Height"})
+    df = df.rename(columns={"Earthquake Magnitude": "Magnitude"})
+    df = df.rename(columns={"Number of Runups": "Num_Runups"})
+    df = df.rename(columns={"Total Damage Description": "Total_Damage_Description"})
+    df = df.rename(columns={"Total Damage ($Mil)": "Total_Damage($Mil)"})
+    df = df.rename(columns={"Total Injuries Description": "Total_Injuries_Description"})
+    df = df.rename(columns={"Total Injuries": "Total_Injuries"})
+    df = df.rename(columns={"Total Death Description": "Total_Death_Description"})
+
+    #print all Tsunami_Magnitude_Abe$
+    print(df["Total_Injuries"].unique())
+    #save the updated dataset
+    out_path = os.path.join(path, "tsunamis_updated_4_renamed.csv")
+    df.to_csv(out_path, index=False)
+
+def main(path):
+    file_path = os.path.join(path, "dataset_updated.csv")
+    df = pd.read_csv(file_path)
+    df = df.rename(columns={"Origin Time": "Origin_Time"})
+    df = df.rename(columns={"Latitude[degree]": "Latitude"})
+    df = df.rename(columns={"Longitude[degree]": "Longitude"})
+    df = df.rename(columns={"Depth[km]": "Depth"})
+    df = df.rename(columns={"Seismic Intensity": "Seismic_Intensity"})
+    df = df.rename(columns={"Number of stations": "Num_Stations"})
+    df = df.rename(columns={"Max Acc[gal]": "Max_Acc[gal]"})
+    df = df.rename(columns={"Max Vel[cm/s]": "Max_Vel[cm/s]"})
+
+    out_path = os.path.join(path, "dataset_updated_renamed.csv")
+    df.to_csv(out_path, index=False)
 
 
 if __name__ == "__main__":
-    Dataset_path = "./dataset1/1/"
-    searched_magnitude = 6.7
+    Dataset_path = "./dataset1/"
 
-    main(Dataset_path, searched_magnitude)
+    main(Dataset_path)
