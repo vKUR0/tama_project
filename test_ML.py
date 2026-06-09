@@ -16,6 +16,8 @@ def main(path):
     file_path = os.path.join(path, "dataset_updated_renamed.csv")
     df = load_dataset(file_path)
 
+    #BOOSTING
+
 
 if __name__ == "__main__":
     main("./dataset1/")
