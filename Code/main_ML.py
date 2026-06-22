@@ -5,8 +5,7 @@ import pandas as pd
 from sklearn.metrics import r2_score, root_mean_squared_error
 from sklearn.model_selection import train_test_split
 
-# Importation de nos propres modules (les fichiers créés au-dessus)
-from data import load_dataset, scale_features
+from data import load_dataset, scale_features, encode_250m_mesh
 from models import get_models
 
 

@@ -14,7 +14,7 @@ def get_models():
             hidden_layer_sizes=(64, 32, 16),
             activation="relu",
             solver="adam",
-            max_iter=1000,  # Nombre d'époques max pour converger
-            random_state=42,
+            max_iter=1000, 
+            random_state=69,
         ),
     }
