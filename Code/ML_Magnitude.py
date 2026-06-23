@@ -1,20 +1,19 @@
-# main.py
 import os
 import time
 import pandas as pd
 from sklearn.metrics import r2_score, root_mean_squared_error
 from sklearn.model_selection import train_test_split
 
-from data import load_dataset, scale_features, encode_250m_mesh
-from models import get_models
+from Code.Tools.data import load_dataset_magnitude, scale_features, encode_250m_mesh
+from Code.Models.Models_Magnitude import get_models
 
 
 def main(data_dir):
     # Construction du chemin vers le fichier CSV
-    file_path = os.path.join(data_dir, "dataset_updated_renamed.csv")
+    file_path = os.path.join(data_dir, "dataset_earthquake.csv")
 
     print("1. Chargement et nettoyage des données...")
-    X, y = load_dataset(file_path)
+    X, y = load_dataset_magnitude(file_path)
 
     # Découpage Train (80%) / Test (20%)
     X_train, X_test, y_train, y_test = train_test_split(
@@ -75,4 +74,4 @@ def main(data_dir):
 
 if __name__ == "__main__":
     # Point d'entrée du programme avec le chemin vers ton dossier de données
-    main("./dataset1/")
+    main("./dataset/")

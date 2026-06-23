@@ -179,18 +179,13 @@ def Modify_tsunamis_updated_4(path):
     df.to_csv(out_path, index=False)
 
 def main(path):
-    file_path = os.path.join(path, "dataset_updated.csv")
+    file_path = os.path.join(path, "dataset_updated_renamed.csv")
     df = pd.read_csv(file_path)
-    df = df.rename(columns={"Origin Time": "Origin_Time"})
-    df = df.rename(columns={"Latitude[degree]": "Latitude"})
-    df = df.rename(columns={"Longitude[degree]": "Longitude"})
-    df = df.rename(columns={"Depth[km]": "Depth"})
-    df = df.rename(columns={"Seismic Intensity": "Seismic_Intensity"})
-    df = df.rename(columns={"Number of stations": "Num_Stations"})
-    df = df.rename(columns={"Max Acc[gal]": "Max_Acc[gal]"})
-    df = df.rename(columns={"Max Vel[cm/s]": "Max_Vel[cm/s]"})
-
-    out_path = os.path.join(path, "dataset_updated_renamed.csv")
+    print(f"Nombre de lignes dans le fichier : {len(df)}")
+    print("columns : ", df.columns)
+    # add tsunami colum to the dataset with 0 if Tsunami_Id is == 0  and 1 if Tsunami_Id is != 0
+    df["Tsunami"] = df["Tsunami_ID"].apply(lambda x: 0 if x == 0 else 1)
+    out_path = os.path.join(path, "dataset_updated_renamed_with_tsunami.csv")
     df.to_csv(out_path, index=False)
 
 
