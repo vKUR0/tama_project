@@ -88,7 +88,7 @@ if st.button("It's snow time!"):
 
 if st.button("Make it rain!"):
     rain(
-        emoji="🖕",  # Emoji de pluie
+        emoji="❤️",  # Emoji de pluie
         font_size=54,
         falling_speed=5,
         animation_length=2,
