@@ -3,9 +3,10 @@ import time
 import pandas as pd
 from sklearn.metrics import r2_score, root_mean_squared_error
 from sklearn.model_selection import train_test_split
+import joblib
 
-from Code.Tools.data import load_dataset_magnitude, scale_features, encode_250m_mesh
-from Code.Models.Models_Magnitude import get_models
+from Tools.data import load_dataset_magnitude, scale_features, encode_250m_mesh
+from Models.Models_Magnitude import get_models
 
 
 def main(data_dir):
@@ -70,6 +71,14 @@ def main(data_dir):
     print("\n========== PERFORMANCE METRICS ==========")
     print(df_performance.to_string(index=False))
     print("=========================================\n")
+    # save xgboost model
+    xgb_model = modeles.get("XGBoost Regressor")
+    if xgb_model:
+        joblib.dump(xgb_model, os.path.join(data_dir, "xgboost_magnitude_model.pkl"))
+        print("XGBoost model saved as 'xgboost_magnitude_model.pkl' in the dataset directory.")
+
+
+
 
 
 if __name__ == "__main__":

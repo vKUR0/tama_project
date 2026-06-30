@@ -1,6 +1,7 @@
 # main_tsunami.py
 import os
 import time
+import joblib
 import pandas as pd
 from sklearn.metrics import f1_score, recall_score, roc_auc_score, accuracy_score
 from sklearn.model_selection import train_test_split
@@ -88,6 +89,12 @@ def main(data_dir):
     print("\n=== TSUNAMI CLASSIFICATION PERFORMANCE TABLE ===")
     print(df_performance.to_string(index=False))
     print("================================================\n")
+
+    # save xgboost model
+    xgb_model = classifiers.get("XGBoost Classifier")
+    if xgb_model:
+        joblib.dump(xgb_model, os.path.join(data_dir, "xgboost_tsunami_model.pkl"))
+        print("XGBoost model saved as 'xgboost_tsunami_model.pkl' in the dataset directory.")
 
 
 if __name__ == "__main__":
