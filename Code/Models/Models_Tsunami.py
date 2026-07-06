@@ -11,7 +11,6 @@ def get_trained_classifiers(scale_pos_weight_value=1.0):
     return {
         "Dummy": DummyClassifier(strategy="most_frequent"),
         
-        # --- RANDOM FOREST OPTIMISÉ ---
         "Random Forest Classifier": RandomForestClassifier(
             n_estimators=50,
             max_depth=10,
@@ -22,7 +21,6 @@ def get_trained_classifiers(scale_pos_weight_value=1.0):
             n_jobs=-1,
         ),
         
-        # --- XGBOOST OPTIMISÉ ---
         "XGBoost Classifier": xgb.XGBClassifier(
             n_estimators=300,
             max_depth=9,
@@ -33,8 +31,7 @@ def get_trained_classifiers(scale_pos_weight_value=1.0):
             eval_metric="logloss",
             random_state=69,
         ),
-        
-        # --- MLP OPTIMISÉ ---
+    
         "MLP Classifier": MLPClassifier(
             hidden_layer_sizes=(64, 32, 16),
             activation="tanh",

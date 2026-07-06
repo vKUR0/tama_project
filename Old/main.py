@@ -178,15 +178,17 @@ def Modify_tsunamis_updated_4(path):
     out_path = os.path.join(path, "tsunamis_updated_4_renamed.csv")
     df.to_csv(out_path, index=False)
 
-def main(path):
-    file_path = os.path.join(path, "dataset_updated_renamed.csv")
-    df = pd.read_csv(file_path)
-    print(f"Nombre de lignes dans le fichier : {len(df)}")
-    print("columns : ", df.columns)
-    # add tsunami colum to the dataset with 0 if Tsunami_Id is == 0  and 1 if Tsunami_Id is != 0
-    df["Tsunami"] = df["Tsunami_ID"].apply(lambda x: 0 if x == 0 else 1)
-    out_path = os.path.join(path, "dataset_updated_renamed_with_tsunami.csv")
-    df.to_csv(out_path, index=False)
+
+# file_path = os.path.join(path, "dataset_updated_renamed.csv")
+#     df = pd.read_csv(file_path)
+#     print(f"Nombre de lignes dans le fichier : {len(df)}")
+#     print("columns : ", df.columns)
+#     # add tsunami colum to the dataset with 0 if Tsunami_Id is == 0  and 1 if Tsunami_Id is != 0
+#     df["Tsunami"] = df["Tsunami_ID"].apply(lambda x: 0 if x == 0 else 1)
+#     out_path = os.path.join(path, "dataset_updated_renamed_with_tsunami.csv")
+#     df.to_csv(out_path, index=False)
+
+    
 
 
 if __name__ == "__main__":

@@ -7,10 +7,15 @@ import datetime
 
 # Import de notre fonction de prédiction
 from Calc.predictor import predict_earthquake_events
+from Calc.feature import load_cached_seismic_history, get_time_last_EQ
 
 
 # Configuration de la page
 st.set_page_config(page_title="Seismic Predictor Dashboard", layout="wide")
+if "df_history" not in st.session_state:
+    st.session_state.df_history = load_cached_seismic_history(
+        "App/Calc/dataset/dataset_earthquake.csv"
+    )
 
 st.title("Tama University - Seismic Event Predictor")
 st.write("Enter the characteristics of the event to estimate its power and associated risks.")
@@ -42,6 +47,10 @@ lat = float(lat_input)
 lon = float(lon_input)
 depth = float(depth_input)
 nb_station = int(float(nb_station_input))
+target_datetime = datetime.datetime.combine(date_input, time_input)
+time_since_eq = get_time_last_EQ(
+    lat, lon, target_datetime, st.session_state.df_history
+)
 
 # Calcul des prédictions via notre fichier predictor.py
 magnitude, tsunami = predict_earthquake_events(
@@ -52,6 +61,7 @@ magnitude, tsunami = predict_earthquake_events(
     month,
     hour,
     int(nb_station),
+    time_since_eq
 )
 
 # Affichage des résultats sous forme de cartes d'indicateurs (Metrics)
