@@ -4,18 +4,27 @@ import folium
 from streamlit_folium import st_folium
 from streamlit_extras.let_it_rain import rain
 import datetime
+from pathlib import Path
 
-# Import de notre fonction de prédiction
 from Calc.predictor import predict_earthquake_events
 from Calc.feature import load_cached_seismic_history, get_time_last_EQ
 
 
-# Configuration de la page
-st.set_page_config(page_title="Seismic Predictor Dashboard", layout="wide")
+
+# 1. On trouve où est situé le fichier app.py actuel (App/)
+CURRENT_DIR = Path(__file__).resolve().parent
+
+# 2. On reconstruit proprement le chemin vers le fichier CSV
+# Cela va donner : /mount/src/tama_project/App/Calc/dataset/dataset_earthquake.csv
+DATASET_PATH = CURRENT_DIR / "Calc" / "dataset" / "dataset_earthquake.csv"
+
+# 3. Chargement sécurisé avec vérification
 if "df_history" not in st.session_state:
-    st.session_state.df_history = load_cached_seismic_history(
-        "App/Calc/dataset/dataset_earthquake.csv"
-    )
+    if not DATASET_PATH.exists():
+        st.error(f"❌ Fichier historique introuvable au chemin construit : {DATASET_PATH}")
+        st.stop() # Arrête proprement l'application avec un message explicite
+        
+    st.session_state.df_history = load_cached_seismic_history(str(DATASET_PATH))
 
 st.title("Tama University - Seismic Event Predictor")
 st.write("Enter the characteristics of the event to estimate its power and associated risks.")
