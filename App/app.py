@@ -10,7 +10,7 @@ from Calc.predictor import predict_earthquake_events
 from Calc.feature import load_cached_seismic_history, get_time_last_EQ
 
 
-
+st.set_page_config(page_title="Tama University - Seismic Dashboard", layout="wide")
 # 1. On part de la racine du projet (/mount/src/tama_project)
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
