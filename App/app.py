@@ -11,20 +11,39 @@ from Calc.feature import load_cached_seismic_history, get_time_last_EQ
 
 
 
-# 1. On trouve où est situé le fichier app.py actuel (App/)
-CURRENT_DIR = Path(__file__).resolve().parent
+# 1. On part de la racine du projet (/mount/src/tama_project)
+ROOT_DIR = Path(__file__).resolve().parents[1]
 
-# 2. On reconstruit proprement le chemin vers le fichier CSV
-# Cela va donner : /mount/src/tama_project/App/Calc/dataset/dataset_earthquake.csv
-DATASET_PATH = CURRENT_DIR / "Calc" / "dataset" / "dataset_earthquake.csv"
+# 2. On cherche de manière récursive tous les fichiers .csv qui contiennent "earthquake"
+csv_files = list(ROOT_DIR.rglob("*earthquake*.csv"))
 
-# 3. Chargement sécurisé avec vérification
 if "df_history" not in st.session_state:
-    if not DATASET_PATH.exists():
-        st.error(f"❌ Fichier historique introuvable au chemin construit : {DATASET_PATH}")
-        st.stop() # Arrête proprement l'application avec un message explicite
-        
-    st.session_state.df_history = load_cached_seismic_history(str(DATASET_PATH))
+    if csv_files:
+        # On prend le premier fichier trouvé qui correspond
+        DETECTED_PATH = csv_files[0]
+        st.success(f"🔍 Fichier détecté automatiquement : `{DETECTED_PATH.relative_to(ROOT_DIR)}`")
+        st.session_state.df_history = load_cached_seismic_history(
+            str(DETECTED_PATH)
+        )
+    else:
+        # Si vraiment aucun fichier ne correspond, on affiche le contenu du projet pour comprendre
+        st.error(
+            "❌ Aucun fichier contenant 'earthquake' et se terminant par '.csv' n'a été trouvé."
+        )
+
+        # Petit outil de debug pour lister ce qu'il y a dans App/Calc/
+        calc_dir = ROOT_DIR / "App" / "Calc"
+        if calc_dir.exists():
+            st.write(
+                "Contenu du dossier `App/Calc/` :", list(calc_dir.iterdir())
+            )
+        else:
+            st.write(
+                "Le dossier `App/Calc/` n'existe pas à la racine. Dossiers disponibles :",
+                list(ROOT_DIR.iterdir()),
+            )
+
+        st.stop()
 
 st.title("Tama University - Seismic Event Predictor")
 st.write("Enter the characteristics of the event to estimate its power and associated risks.")
