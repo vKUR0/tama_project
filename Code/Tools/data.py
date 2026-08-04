@@ -1,6 +1,68 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
+def load_dataset_seismic_intensity(path):
+    """Loads the dataset, cleans column names, engineers historical features,
+
+    includes soil/mesh characteristics (AVS, ARV, Mesh_Code), and splits X and y.
+    """
+    df = pd.read_csv(path)
+
+    # --- CLEAN COLUMN NAMES FOR XGBOOST ---
+    df.columns = (
+        df.columns.str.replace("[", "_", regex=False)
+        .str.replace("]", "", regex=False)
+        .str.replace("<", "", regex=False)
+    )
+
+    # 1. Parse and preserve the original timestamp for calculations
+    df["Timestamp"] = pd.to_datetime(df["Origin_Time"])
+
+    # Extract time components
+    df["Year"] = df["Timestamp"].dt.year
+    df["Month"] = df["Timestamp"].dt.month
+    df["Hour"] = df["Timestamp"].dt.hour
+
+    # Drop the original string column
+    if "Origin_Time" in df.columns:
+        df = df.drop("Origin_Time", axis=1)
+
+    # 2. Historical Feature Engineering (Spatio-Temporal Grid)
+    df["Lat_Grid"] = df["Latitude"].round(1)
+    df["Lon_Grid"] = df["Longitude"].round(1)
+
+    df["Time_Since_Last_EQ"] = (
+        df.groupby(["Lat_Grid", "Lon_Grid"])["Timestamp"]
+        .diff()
+        .dt.total_seconds()
+    )
+    df["Time_Since_Last_EQ"] = df["Time_Since_Last_EQ"].fillna(-1)
+
+    # 3. Clean soil/mesh columns if present
+    for col in ["AVS", "ARV", "Mesh_Code"]:
+        if col in df.columns:
+            df[col] = df[col].fillna(-1.0)
+
+    # --- SEPARATING FEATURES / TARGET ---
+    # Included soil characteristics (AVS, ARV, Mesh_Code) for enhanced prediction accuracy
+    feature_cols = [
+        # "Latitude",
+        # "Longitude",
+        "Depth",
+        "Magnitude",
+        "Num_Stations",
+        "Time_Since_Last_EQ",
+        "Mesh_Code",
+    ]
+
+    # Filter features that are present in the dataset
+    available_features = [col for col in feature_cols if col in df.columns]
+
+    X = df[available_features]
+    y = df["Seismic_Intensity"]
+
+    return X, y
+
 def load_dataset_magnitude(path):
     """Loads the dataset, cleans column names, engineers historical features, and splits X and y."""
     df = pd.read_csv(path)

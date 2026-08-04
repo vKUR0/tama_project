@@ -4,21 +4,22 @@ import pandas as pd
 from sklearn.metrics import r2_score, root_mean_squared_error
 from sklearn.model_selection import train_test_split
 import joblib
+from matplotlib import pyplot as plt
+import xgboost as xgb
 
 from Tools.data import load_dataset_magnitude, scale_features, encode_250m_mesh
 from Models.Models_Magnitude import get_models
 
 
-def main(data_dir):
+def main(file_path):
     # Construction du chemin vers le fichier CSV
-    file_path = os.path.join(data_dir, "dataset_earthquake.csv")
 
     print("1. Chargement et nettoyage des données...")
     X, y = load_dataset_magnitude(file_path)
 
     # Découpage Train (80%) / Test (20%)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+        X, y, test_size=0.25, random_state=42
     )
 
     X_train_scaled, X_test_scaled = scale_features(X_train, X_test)
@@ -54,7 +55,7 @@ def main(data_dir):
         # Calcul des métriques de performance
         rmse = root_mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
-
+        #Create a scatter plot of the predictions vs the true values
         # Sauvegarde des scores
         resultats.append(
             {
@@ -74,13 +75,31 @@ def main(data_dir):
     # save xgboost model
     xgb_model = modeles.get("XGBoost Regressor")
     if xgb_model:
-        joblib.dump(xgb_model, os.path.join(data_dir, "xgboost_magnitude_model.pkl"))
+        joblib.dump(xgb_model, os.path.join("./Dataset/", "xgboost_magnitude_model.pkl"))
         print("XGBoost model saved as 'xgboost_magnitude_model.pkl' in the dataset directory.")
+    # use the xgboost model to do a scatter plot of the predictions vs the true values
+    y_pred_xgb = xgb_model.predict(X_test)
+    plt.figure(figsize=(10, 6))
+    plt.scatter(y_test, y_pred_xgb, alpha=0.5)
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
 
+    plt.xlabel('True Values')
+    plt.ylabel('Predictions')
+    plt.title('XGBoost Predictions vs True Values')
+    plt.savefig(os.path.join("./Dataset/", "xgboost_predictions_vs_true_values.png"))
+    plt.show()
+    plt.figure(figsize=(10, 6))
+    xgb.plot_importance(xgb_model, max_num_features=10, importance_type='weight')
+    plt.title('Importance des variables pour prédire la Magnitude')
+    plt.tight_layout()
+    plt.show()
 
 
 
 
 if __name__ == "__main__":
-    # Point d'entrée du programme avec le chemin vers ton dossier de données
-    main("./dataset/")
+    # file_path = "./dataset/dataset_earthquake.csv"  # Remplace par le chemin réel vers ton fichier CSV
+    # main(file_path)
+    file_path = "./dataset/dataset_earthquake_full.csv"  # Remplace par le chemin réel vers ton fichier CSV
+    main(file_path)
+    
