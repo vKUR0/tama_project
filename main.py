@@ -192,47 +192,20 @@ import pandas as pd
 
 def merge_soil_data():
     dataset_path = "./Dataset"
-    eq_filename = "updated.csv"
+    eq_filename = "updated2.csv"
     amp_filename = "Z-V4-JAPAN-AMP-VS400_M250.csv"
-    new_filename = "updated2.csv"
+    new_filename = "updated3.csv"
 
     eq_path = os.path.join(dataset_path, eq_filename)
     amp_path = os.path.join(dataset_path, amp_filename)
     new_path = os.path.join(dataset_path, new_filename)
 
-    print("1. Loading earthquake dataset...")
-    df_eq = pd.read_csv(eq_path)
+    df = pd.read_csv(eq_path)
 
-    print("2. Loading amplification dataset...")
-    df_amp = pd.read_csv(amp_path)
-
-    # Strip potential leading/trailing whitespace from header names
-    df_amp.columns = [col.strip() for col in df_amp.columns]
-
-    # Ensure the mesh code columns match in type (int64)
-    df_eq["Mesh_Code"] = df_eq["Mesh_Code"].astype(int)
-    df_amp["CODE"] = df_amp["CODE"].astype(int)
-
-    # Select only the necessary columns from the amplification dataset
-    df_amp_subset = df_amp[["CODE", "AVS", "ARV"]]
-
-    print("3. Merging soil characteristics into the earthquake dataset...")
-    # Left merge retains all earthquake records, appending AVS and ARV where Mesh_Code matches
-    df_merged = pd.merge(
-        df_eq, df_amp_subset, left_on="Mesh_Code", right_on="CODE", how="left"
-    )
-
-    # Drop the redundant 'CODE' column from the amplification file
-    df_merged.drop(columns=["CODE"], inplace=True)
-
-    # Optional: Fill missing values if some earthquakes fall outside the J-SHIS mesh grid
-    # e.g., offshore events with no ground measurement
-    df_merged["AVS"] = df_merged["AVS"].fillna(-1.0)
-    df_merged["ARV"] = df_merged["ARV"].fillna(-1.0)
+    df["Is_Offshore"] = (df["AVS"] == -1.0).astype(int)
 
     print("4. Saving enriched dataset...")
-    df_merged.to_csv(new_path, index=False)
-    print(f"✅ Success! Added 'AVS' and 'ARV' columns to {new_path}")
+    df.to_csv(new_path, index=False)
 
 
 if __name__ == "__main__":

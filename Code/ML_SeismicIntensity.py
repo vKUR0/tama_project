@@ -56,18 +56,17 @@ def main(file_path):
         rmse = root_mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
         #Create a scatter plot of the predictions vs the true values
-        # Sauvegarde des scores
-        resultats.append(
-            {
-                "Model": nom,
-                "RMSE": round(rmse, 3),
-                "R² Score": round(r2, 3),
-                "Training Time (s)": round(temps_entrainement, 4),
-                "Prediction Time (s)": round(temps_prediction, 4),
-            }
-        )
-
-    # 3. Affichage du tableau comparatif final
+        # Sauvegarde des scores uniquement pour le modèle XGBoost
+        if nom == "XGBoost Regressor":
+            resultats.append(
+                {
+                    "Modèle": nom,
+                    "RMSE": round(rmse, 3),
+                    "R2": round(r2, 3),
+                    "Temps d'entraînement (s)": round(temps_entrainement, 4),
+                    "Temps de prédiction (s)": round(temps_prediction, 4),
+                }
+            )
     df_performance = pd.DataFrame(resultats)
     print("\n========== PERFORMANCE METRICS ==========")
     print(df_performance.to_string(index=False))
@@ -79,9 +78,26 @@ def main(file_path):
         print("XGBoost model saved as 'xgboost_magnitude_model.pkl' in the dataset directory.")
     # use the xgboost model to do a scatter plot of the predictions vs the true values
     y_pred_xgb = xgb_model.predict(X_test)
-    xgb.plot_importance(xgb_model, max_num_features=10, importance_type='weight')
-    plt.title("Top 10 Feature Importances for XGBoost Model")
-    plt.show()
+    
+    #print the feature importances by weight
+    # Extract specific metric from the underlying Booster
+    booster = xgb_model.get_booster()
+
+    # Choose importance_type: 'gain', 'weight', or 'cover'
+    importance_dict = booster.get_score(importance_type="weight")
+
+    # Print sorted
+    for feature, score in sorted(
+        importance_dict.items(), key=lambda x: x[1], reverse=True
+    ):
+        print(f"Feature: {feature}, weight Score: {score:.4f}")
+    importance_dict = booster.get_score(importance_type="gain")
+    print("\nFeature importances by gain:")
+    # Print sorted
+    for feature, score in sorted(
+        importance_dict.items(), key=lambda x: x[1], reverse=True
+    ):
+        print(f"Feature: {feature}, gain Score: {score:.4f}")
 
 
 
@@ -89,6 +105,6 @@ def main(file_path):
 if __name__ == "__main__":
     # file_path = "./dataset/dataset_earthquake.csv"  # Remplace par le chemin réel vers ton fichier CSV
     # main(file_path)
-    file_path = "./dataset/updated2.csv"  # Remplace par le chemin réel vers ton fichier CSV
+    file_path = "./dataset/updated3.csv"  # Remplace par le chemin réel vers ton fichier CSV
     main(file_path)
     

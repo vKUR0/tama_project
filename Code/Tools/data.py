@@ -46,13 +46,16 @@ def load_dataset_seismic_intensity(path):
     # --- SEPARATING FEATURES / TARGET ---
     # Included soil characteristics (AVS, ARV, Mesh_Code) for enhanced prediction accuracy
     feature_cols = [
-        # "Latitude",
-        # "Longitude",
+        "Latitude",
+        "Longitude",
         "Depth",
         "Magnitude",
         "Num_Stations",
         "Time_Since_Last_EQ",
         "Mesh_Code",
+        "AVS",
+        "ARV",
+        "Is_Offshore",
     ]
 
     # Filter features that are present in the dataset
