@@ -98,7 +98,26 @@ def load_dataset_magnitude(path):
 
     # --- SEPARATING FEATURES / TARGET ---
     # Define explicitly which columns go into your Machine Learning model
-    feature_cols = ["Latitude", "Longitude", "Depth", "Year", "Month", "Hour", "Num_Stations",  "Time_Since_Last_EQ"]
+    # feature_cols = [
+    #         "Latitude",
+    #         "Longitude",
+    #         "Depth",
+    #         "Num_Stations",
+    #         "Time_Since_Last_EQ",
+    #         "Mesh_Code",
+    #         "AVS",
+    #         "ARV",
+    #         "Is_Offshore",
+    #     ]
+    feature_cols = [
+                "Latitude",
+                "Longitude",
+                "Depth",
+                "Num_Stations",
+                "Year",
+                "Month",
+                "Hour",
+            ]
     
     X = df[feature_cols]
     y = df["Magnitude"]
@@ -140,11 +159,12 @@ def load_dataset_tsunami(path):
         "Latitude",
         "Longitude",
         "Depth",
-        "Magnitude", 
-        "Year",
-        "Month",
-        "Hour",
+        "Num_Stations",
         "Time_Since_Last_EQ",
+        "Mesh_Code",
+        "AVS",
+        "ARV",
+        "Is_Offshore",
     ]
 
     X = df[feature_cols]

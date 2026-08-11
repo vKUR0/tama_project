@@ -19,7 +19,7 @@ def main(file_path):
 
     # Découpage Train (80%) / Test (20%)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=42
+        X, y, test_size=0.2, random_state=69
     )
 
     X_train_scaled, X_test_scaled = scale_features(X_train, X_test)
@@ -82,17 +82,25 @@ def main(file_path):
     plt.figure(figsize=(10, 6))
     plt.scatter(y_test, y_pred_xgb, alpha=0.5)
     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+    plt.show()
 
-    plt.xlabel('True Values')
-    plt.ylabel('Predictions')
-    plt.title('XGBoost Predictions vs True Values')
-    plt.savefig(os.path.join("./Dataset/", "xgboost_predictions_vs_true_values.png"))
-    plt.show()
-    plt.figure(figsize=(10, 6))
-    xgb.plot_importance(xgb_model, max_num_features=10, importance_type='weight')
-    plt.title('Importance des variables pour prédire la Magnitude')
-    plt.tight_layout()
-    plt.show()
+    booster = xgb_model.get_booster()
+    
+    # Choose importance_type: 'gain', 'weight', or 'cover'
+    importance_dict = booster.get_score(importance_type="weight")
+
+    # Print sorted
+    for feature, score in sorted(
+        importance_dict.items(), key=lambda x: x[1], reverse=True
+    ):
+        print(f"Feature: {feature}, weight Score: {score:.4f}")
+    importance_dict = booster.get_score(importance_type="gain")
+    print("\nFeature importances by gain:")
+    # Print sorted
+    for feature, score in sorted(
+        importance_dict.items(), key=lambda x: x[1], reverse=True
+    ):
+        print(f"Feature: {feature}, gain Score: {score:.4f}")
 
 
 
@@ -100,6 +108,6 @@ def main(file_path):
 if __name__ == "__main__":
     # file_path = "./dataset/dataset_earthquake.csv"  # Remplace par le chemin réel vers ton fichier CSV
     # main(file_path)
-    file_path = "./dataset/dataset_earthquake_full.csv"  # Remplace par le chemin réel vers ton fichier CSV
+    file_path = "./dataset/updated3.csv"  # Remplace par le chemin réel vers ton fichier CSV
     main(file_path)
     
